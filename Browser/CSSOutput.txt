@@ -1,0 +1,118 @@
+<style>.nav-sprite-v1 .nav-sprite, .nav-sprite-v1 .nav-icon 
+	{
+	
+  background-image: url(https://images-na.ssl-images-amazon.com/images/G/01/gno/sprites/nav-sprite-global_bluebeacon-V3-1x_optimized._CB516556901_.png);
+	
+  background-position: 0 1000px;
+	
+  background-repeat: repeat-x;
+	
+
+	}
+	
+.nav-spinner 
+	{
+	
+  background-image: url(https://images-na.ssl-images-amazon.com/images/G/01/javascripts/lib/popover/images/snake._CB192571611_.gif);
+	
+  background-position: center center;
+	
+  background-repeat: no-repeat;
+	
+
+	}
+	
+.nav-timeline-icon, .nav-access-image, .nav-timeline-prime-icon 
+	{
+	
+  background-image: url(https://images-na.ssl-images-amazon.com/images/G/01/gno/sprites/timeline_sprite_1x._CB276239408_.png);
+	
+  background-repeat: no-repeat;
+	
+
+	}
+	
+</style><style>#ape_Gateway_right-2_desktop_placement
+	{
+	line-height:1
+	}
+	 #ape_Gateway_right-2_desktop_placement div
+	{
+	margin: 0 auto!important;
+	 width: 100%!important;
+	 top:1px !important;
+	 
+	}
+	 #ape_Gateway_right-2_desktop_placement>div>a
+	{
+	top:0 !important
+	}
+	</style><style>
+  #nav-prime-tooltip
+	{
+	
+    padding: 0 20px 2px 20px;
+	
+    background-color: white;
+	
+    font-family: arial,sans-serif;
+	
+  
+	}
+	
+  .nav-npt-text-title
+	{
+	
+    font-family: arial,sans-serif;
+	
+    font-size: 18px;
+	
+    font-weight: bold;
+	
+    line-height: 21px;
+	
+    color: #E47923;
+	
+  
+	}
+	
+  .nav-npt-text-detail, a.nav-npt-a
+	{
+	
+    font-family: arial,sans-serif;
+	
+    font-size: 12px;
+	
+    line-height: 14px;
+	
+    color: #333333;
+	
+    margin: 2px 0px;
+	
+  
+	}
+	
+  a.nav-npt-a 
+	{
+	
+    text-decoration: underline;
+	
+  
+	}
+	
+</style><style>#ape_Gateway_right-7_desktop_placement
+	{
+	line-height:1
+	}
+	 #ape_Gateway_right-7_desktop_placement div
+	{
+	margin: 0 auto!important;
+	 width: 100%!important;
+	 top:1px !important;
+	 
+	}
+	 #ape_Gateway_right-7_desktop_placement>div>a
+	{
+	top:0 !important
+	}
+	</style>

@@ -1,0 +1,36 @@
+/*CSS reset settings here*/
+*{
+    margin: 0px;
+    padding: 0px;
+   }
+   p, h1, h2{
+       color: green;
+   }
+   ul{
+       display: inline-block;
+       color: lightblue;
+   }
+   a{
+       color: turquoise;
+   }
+   .box{
+       /* Border for rounded corners */
+       -moz-border-radius: 15px;
+       border-radius: 15px;
+   }
+   .space{
+       /* Creates spaces in between lines */
+       line-height: 3em;
+   }
+   .bold_text{
+       color: purple;
+       display: inline;
+   }
+   .normal_text{
+       display: inline;
+   }
+   #background{
+       width: 1150px;
+       background-color: navy;
+       padding: 10px;
+   }

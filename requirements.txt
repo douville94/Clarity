@@ -1,0 +1,7 @@
+pytest>=3.2.1
+py>=1.4.31
+codecov>=2.0.15
+PyQt5>=5
+pytest-cov>=2.5
+pyperclip>=1.6.0
+pytest-xvfb==1.1.0

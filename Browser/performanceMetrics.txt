@@ -1,0 +1,5 @@
+Time to load 'google.com' in seconds: 4.752969980239868
+Time to load 'up.edu' in seconds: 10.453866004943848
+Time to load 'youtube.com' in seconds: 243.5011169910431
+Time to load 'amazon.com' in seconds: 15.598299980163574
+Time to load 'en.wikipedia.org/wiki/Main_Page' in seconds: 8.246709108352661
