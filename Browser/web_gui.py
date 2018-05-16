@@ -7,6 +7,8 @@ from PyQt5.QtGui import *
 import os.path
 from pathlib import Path
 import re
+import urllib3
+import urllib.request
 
 # Import method to parse
 from get_url import parse_site
@@ -32,7 +34,7 @@ class BrowserWindow(QWidget):
         self.init_ui()
 
     # Initialize the GUI
-    def init_ui(self):#pass in parameters from CSSOutput.txt
+    def init_ui(self):
         #Add the menu bar
         #Taken from:  https://pythonprogramming.net/menubar-pyqt-tutorial/
         closeAction = QAction("Close window", self)
@@ -54,11 +56,6 @@ class BrowserWindow(QWidget):
         closeTabAction.setShortcut("Ctrl+Shift+T")
         closeTabAction.setStatusTip("Close current tab")
         closeTabAction.triggered.connect(self.close_tab)
-        
-        refreshPageAction = QAction("Refresh Webpage", self)
-        refreshPageAction.setShortcut("Ctrl+R")
-        refreshPageAction.setStatusTip("Refresh the current Webpage")
-        refreshPageAction.triggered.connect(self.refresh_page)
 
         addBookmarkAction = QAction("Add or remove bookmark", self)
         addBookmarkAction.setShortcut("Ctrl+Shift+B")
@@ -103,7 +100,6 @@ class BrowserWindow(QWidget):
         fileMenu.addAction(closeAction)
         fileMenu.addAction(newTabAction)
         fileMenu.addAction(closeTabAction)
-        fileMenu.addAction(refreshPageAction)
         editMenu = mainMenu.addMenu("Edit")
         editMenu.addAction(copyAction)
         editMenu.addAction(cutAction)
@@ -204,55 +200,6 @@ class BrowserWindow(QWidget):
         # If we're closing the last tab, close the entire application
         if self.tabs.count() <= 1:
             self.close_application()
-
-    def refresh_page(self):
-        try:
-            #            file_to_open = open("websiteOutput.txt", "r")
-#            print(file_to_open.read())
-#            if website_elements_refresh:
-#                for (htmlType, web_element) in website_elements_refresh:
-#                    new_label = QLabel()
-#                    # Links
-#                    if (htmlType == 'a'):
-#                        if str(web_element[0]).strip() == "":
-#                            new_label.setText(str(web_element[1]))
-#                        else:
-#                            # Get the first element of the tuple which is the text to display for the link
-#                            new_label.setText(str(web_element[0]))
-#
-#                        new_label.setStyleSheet('color: blue') # Links are set to have blue text
-#                        new_label.setFont(QFont("Times", self.font_size, QFont.Normal)) # changes the font size
-#
-#                        new_label.mousePressEvent = functools.partial(self.link_clicked, source_object=new_label, url_text=web_element[1])
-#                    # Titles
-#                    elif (htmlType == 'title'):
-#                        self.tab_title = str(web_element) # Resets the title of the web page
-#                        new_label.setText(str(web_element))
-#                        title_font = QFont("Times", self.title_font_size, QFont.Bold)
-#                        new_label.setFont(title_font)
-#                    # Images
-#                    elif (htmlType == 'img'):
-#                        # web_elements contains (img_url)
-#                        new_img = self.store_img(str(url), str(web_element[0]))
-#                        if new_img == None:
-#                            new_label.setText(web_element[1])
-#                        else:
-#                            pixmap = QPixmap("Images/" + new_img)
-#                            new_label.setPixmap(pixmap)
-#                    # CSS
-#                    elif (htmlType == 'css'):
-#                        #display the contents of the page in accordance with CSS properties
-#                        continue
-#                    else:
-#                        new_label.setText(str(web_element))
-#
-#                    # Add the resulting element to the GUI
-#                    self.scroll_layout.addWidget(new_label)
-#
-#            file_to_open.close()
-            self.register_address(self.current_url)
-        except:
-            self.display_error("Unable to refresh the page...")
 
     # Method to set a Start Page to execute upon startup
     def set_start_page(self):
@@ -429,19 +376,9 @@ class TabWindow(QWidget):
         try:
             # Retrieve the data from the url and return the resulting info from parsing the data
             website_elements = parse_site(url)
-            
-            #Luke Douville's edit
-            fl = open("website_elements.txt", "w")
-            fl.write(str(website_elements))
-            fl.close()
-            global website_elements_refresh
-            website_elements_refresh = website_elements
-            
             if website_elements:
                 for (htmlType, web_element) in website_elements:
                     new_label = QLabel()
-                    print("\n\nhtmlType = ", htmlType)
-                    print("\n\n")
                     # Links
                     if (htmlType == 'a'):
                         if str(web_element[0]).strip() == "":
@@ -469,44 +406,6 @@ class TabWindow(QWidget):
                         else:
                             pixmap = QPixmap("Images/" + new_img)
                             new_label.setPixmap(pixmap)
-                    # CSS
-                    elif (htmlType == 'css'):
-                        #display the contents of the page in accordance with CSS properties
-                        print("\n\n--------------------------\nCSS found!\n-------------------------------------")
-                        
-                        #If the CSS says anything about the display
-                        #Massive for loop?
-#                        for i in range(0, len(web_element)):
-#                        if web_element.startswith("background-color", i, len(web_element)):
-                        if "background-color:" in web_element:
-                            index = web_element.find("background-color:") + 17#place the index right after the text
-                            color = ""
-                            tempString = ""
-                            for n in range(index, len(web_element)):
-                                if n < web_element.find(" ", index, len(web_element)):
-                                    tempString += web_element[n]
-                            color += re.findall('[a-z]', web_element[index:web_element.find(";", index, len(web_element) - 1)])
-#                            color += tempString
-                            print("\n\n----------------------------\nColor: ", color)
-                            print("----------------------------------")
-                            for n in range(0, len(color)):
-                                if color[n] == "#":
-                                    continue
-                                if color[n] == "f" or color[n] == "F":
-                                    #f is max value, so deepest red/green/blue possible
-                                    #fff is pure black
-                                    #000 is pure white
-                                    if n == 0:
-                                        red = 255
-                                    elif n == 1:
-                                        green = 255
-                                    elif n == 2:
-                                        blue = 255
-#                        continue
-                    elif (htmlType == 'style'):
-                        #display the contents of the page in accordance with CSS properties
-                        print("\n\n--------------------------\nstyle found!\n-----------------------------------")
-                        continue
                     else:
                         new_label.setText(str(web_element))
 
@@ -544,7 +443,7 @@ class TabWindow(QWidget):
             if not self.current_url.strip() == "":
                 self.back_history_stack.append(self.current_url)
 
-        # Resets the current url variable to be the url just loaded 
+        # Resets the current url variable to be the url just loaded
         # (NOTE: keep below if not back_forward_call to avoid bug with back button)
         self.current_url = url
 
@@ -580,10 +479,10 @@ class TabWindow(QWidget):
             fin = str(url + path)
         else:
             fin = str(url+'/'+path)
-        
+
         print("fin: ", fin)
         print("\n")
-        
+
         # determine name for new image file.
         name = ""
         for letter in path:
@@ -612,55 +511,7 @@ class TabWindow(QWidget):
     # Method to refresh the current page
     def refresh_page(self):
         try:
-#            file_to_open = open("websiteOutput.txt", "r")
-#            print(file_to_open.read())
-#            if website_elements_refresh:
-#                for (htmlType, web_element) in website_elements_refresh:
-#                    new_label = QLabel()
-#                    # Links
-#                    if (htmlType == 'a'):
-#                        if str(web_element[0]).strip() == "":
-#                            new_label.setText(str(web_element[1]))
-#                        else:
-#                            # Get the first element of the tuple which is the text to display for the link
-#                            new_label.setText(str(web_element[0]))
-#
-#                        new_label.setStyleSheet('color: blue') # Links are set to have blue text
-#                        new_label.setFont(QFont("Times", self.font_size, QFont.Normal)) # changes the font size
-#
-#                        new_label.mousePressEvent = functools.partial(self.link_clicked, source_object=new_label, url_text=web_element[1])
-#                    # Titles
-#                    elif (htmlType == 'title'):
-#                        self.tab_title = str(web_element) # Resets the title of the web page
-#                        new_label.setText(str(web_element))
-#                        title_font = QFont("Times", self.title_font_size, QFont.Bold)
-#                        new_label.setFont(title_font)
-#                    # Images
-#                    elif (htmlType == 'img'):
-#                        # web_elements contains (img_url)
-#                        new_img = self.store_img(str(url), str(web_element[0]))
-#                        if new_img == None:
-#                            new_label.setText(web_element[1])
-#                        else:
-#                            pixmap = QPixmap("Images/" + new_img)
-#                            new_label.setPixmap(pixmap)
-#                    # CSS
-#                    elif (htmlType == 'css'):
-#                        #display the contents of the page in accordance with CSS properties
-#                        continue
-#                    else:
-#                        new_label.setText(str(web_element))
-#
-#                    # Add the resulting element to the GUI
-#                    self.scroll_layout.addWidget(new_label)
-#
-#            file_to_open.close()
-            self.register_address(self.current_url, font_size=18.0, title_font_size=19.0, back_forward_call = True)
-#        except Exception:
-#            print("\nUnable to refresh\n")
-#            print("website_elements_refresh: ", str(website_elements_refresh))
-#            print("\n")
-#            self.register_address(self.current_url)
+            self.register_address(self.current_url)
         except Exception:
             self.display_error("Unable to refresh the page...")
 
@@ -760,4 +611,3 @@ if __name__ == '__main__':
     a_window.show()
     # Keep the application loop running
     sys.exit(app.exec_())
-

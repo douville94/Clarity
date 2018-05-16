@@ -10,7 +10,6 @@ import sys
 import os
 import requests
 #import tinycss
-#import web_gui
 
 class Parse():
     def __init__(self):
@@ -58,34 +57,6 @@ class Parse():
                 title = self.replace_code(title)
                 if title is not "" and title is not None:
                     self.results.append(('p', title))
-            elif self.data.startswith('style', self.open_tags[num] + 1, self.close_tags[num]):
-                text = self.data[self.close_tags[num] + 1:self.open_tags[num + 1]].strip()
-                if text is not "" and text is not None:
-                    self.results.append(('css', text))
-            # CSS
-#            elif self.data.startswith('link href', self.open_tags[num] + 1, self.close_tags[num]):
-#            elif self.data.endswith('.css', self.open_tags[num] + 1, self.close_tags[num]):
-#                link = None
-#                rawText = self.data[self.open_tags[num] + 1 : self.close_tags[num]].strip()
-#                partialLink = re.search(r'(href=\s?[\'\"])(.+?)([\'\"])', rawText) #link in group(2)
-#                if partialLink:
-#                    if not partialLink.group(2).startswith("__"):
-#                        link = partialLink.group(2)
-#                if link:
-#                    if re.match(r'//', link):
-#                        link = "https:" + link
-#                    elif re.match(r'/', link):
-#                        if self.original_url.endswith('/'):
-#                            link = self.original_url + link[1:]
-#                        else:
-#                            link = self.original_url + link
-#                partialLinkStr = str(partialLink)
-#                partialLinkStr = partialLinkStr.strip("<>")
-#                linkStr = str(link)
-#                linkStr = linkStr.strip("<>")
-#                text = requests.get(partialLinkStr, auth=requests.auth.HTTPBasicAuth("user", "pass")).text
-#                self.results.append(('css', text))
-
             # Prints attribute section.
             elif self.data.startswith( 'a', self.open_tags[num]+1, self.close_tags[num] ):
                 rawText = self.data[self.open_tags[num] + 1 : self.close_tags[num]].strip()
@@ -151,71 +122,17 @@ class Parse():
                 if path is not None:
                     self.results.append(('img',(str(path), str(self.replace_code(text)))))
                 #self.image_links.append(self.data[self.close_tags[num]+1:self.open_tags[num+1]])
-            # Prints CSS
-            elif self.data.startswith('link href=', self.open_tags[num] + 1, self.close_tags[num]):
-                path = self.find_path(self.data[self.open_tags[num]:self.close_tags[num]])
-                print("\n----------------------------------\npath: ", path)#This doesn't work for some reason
-                
-                # determine what the hyperlink url is.
-                rawText = self.data[self.open_tags[num] + 1 : self.close_tags[num]].strip()
-                partialLink = re.search(r'(href=\s?[\'\"])(.+?)([\'\"])', rawText) #link in group(2)
-                link = None
-                if partialLink:
-                    if not partialLink.group(2).startswith("__"):
-                        link = partialLink.group(2)
-#                        text = requests.get(link, auth = requests.auth.HTTPBasicAuth("user", "pass")).text
-#                        textStr = str(text)
-                if link:
-                    if re.match(r'//', link):
-#                        link = "https:" + link
-                        newLink = "http:"
-                        newLink += link
-                        text = requests.get(newLink, auth = requests.auth.HTTPBasicAuth("user", "pass")).text
-                        textStr = str(text)
-                    elif re.match(r'/', link):
-                        if self.original_url.endswith('/'):
-                            link = self.original_url + link[1:]
-                            text = requests.get(newLink, auth = requests.auth.HTTPBasicAuth("user", "pass")).text
-                            textStr = str(text)
-                        else:
-                            link = self.original_url + link
-                            text = requests.get(link, auth = requests.auth.HTTPBasicAuth("user", "pass")).text
-                            textStr = str(text)
-                print("\n----------------------------------\nlink: ", link)
-                print("\n----------------------------------\npartialLink: ", partialLink)
-#                if not link.startswith("http://"):
-#                    newLink = "http://"
-#                    newLink += link
-                #get file from path
-#                text = requests.get(path, auth=requests.auth.HTTPBasicAuth("user", "pass")).text
-#                text = requests.get(newLink, auth = requests.auth.HTTPBasicAuth("user", "pass")).text
-#                textStr = str(text)
-#                textStr = textStr.strip("<>")
-                print("\n----------------------------------\n", textStr)
-                self.results.append(('css', textStr))
-            elif self.data.startswith('style', self.open_tags[num] + 1, self.close_tags[num]):
-                text = self.data[self.close_tags[num] + 1:self.open_tags[num + 1]].strip()
-                text = self.replace_code(text)
-                self.results.append(('css', text))
-
         # print ("Web_parse: " + str(self.results))
 
         file = open("CSSOutput.txt", "w")
-        self.getCSS(self.data, file, self.results, 0, len(self.data) - 1)
-        file.close()
-#        file = open("CSSOutput.txt", "w")
         # self.getCSS(self.data, file, 0, len(self.data) - 1)
-#        file.close()
+        file.close()
         #Reopen the CSS output file in read mode
-#        file = open("CSSOutput.txt", "r")
+        file = open("CSSOutput.txt", "r")
         #Parse the CSS output
-        #But first create BrowserWindow instance to pass into the function
-#        browsInst = BrowserWindow()
-#        browsInst = web_gui.BrowserWindow()
-#        self.parseCSS(self.data, file, self.results, 0, len(self.data) - 1)#, browsInst)
+        self.parseCSS(file)
 #        p = tinycss.make_parser(
 
-        #Incorporate CSS into self.results
         return self.results
 
 
@@ -288,7 +205,7 @@ class Parse():
             self.close_tags.append(close_tag_index)
             return self.tags_list(close_tag_index + 1) # Recursive call
 
-    def getCSS(self, d, file, results, x, y):
+    def getCSS(self, d, file, x, y):
         print("You're at the beginning of getCSS.\n")
         print("Current URL: ", self.original_url)
         print("\n")
@@ -301,18 +218,22 @@ class Parse():
         thirdString = ""
         endStyleTag = 0
         endDotCSS = 0
+        i = x
         for i in range(x, y + 1):#len(self.data) - 1):
             #Copy contents of HTML file in specified range into tempString
             tempString += d[i]#From:  https://stackoverflow.com/questions/4435169/how-do-i-append-one-string-to-another-in-python
             if d[i] == "/" and d[i + 1] == ">":
                 print("Now at closing tag!")
                 print("i = ", i)
+                print("\n")
+                print("\n")
                 for l in range(i, y + 1):
                     thirdString += d[l]
-                print("\n\nthirdString.find(\"/>\") = ", thirdString.find("/>"))
+                print("thirdString.find(\"/>\") = ", thirdString.find("/>"))
                 print("\n")
                 y = i + 1
-                print("\n---------------------------------")
+                print("\n")
+                print("---------------------------------")
                 print("y = ", y)
                 print("len(d) - 1 = ", len(d) - 1)
                 print("thirdString.find(\"/>\") = ", thirdString.find("/>"))
@@ -325,13 +246,15 @@ class Parse():
                     print("Index of .css in tempString = ", tempString.find(".css"))
                     print("Index of .css in d = ", d.find(".css", y, len(d)))
                     endDotCSS = d.find(".css", y - 5, len(d))
-                    print("---------------------------------\n")
+                    print("---------------------------------")
+                    print("\n")
                     break
                 break
             elif d[i] == "<" and d[i + 1] == "/":# and d[i + 6] == ">":#tempString goes from the beginning of a tag to the end of a tag
                 print("Now at closing tag!")
                 print("i = ", i)
-                print("\nd.find(\">\") = ", d.find(">"))
+                print("\n")
+                print("d.find(\">\") = ", d.find(">"))
                 print("\n")
                 for k in range(i, y + 1):
                     secondString += d[k]
@@ -343,7 +266,8 @@ class Parse():
 #                    print("\n")
                     if j == i + secondString.find(">"):
                         y = j
-                        print("\n---------------------------------")
+                        print("\n")
+                        print("---------------------------------")
                         print("j = ", j)
                         print("y = ", y)
                         print("len(d) - 1 = ", len(d) - 1)
@@ -366,13 +290,17 @@ class Parse():
                             break
                 break
 
-        print("\n--------------------------------")
+        print("\n")
+        print("--------------------------------")
         print("y after assignment = ", y)
         print("len(d) - 1 = ", len(d) - 1)
-        print("--------------------------------\n")
-        print("\n---------------------------------------------------")
+        print("--------------------------------")
+        print("\n")
+        print("\n")
+        print("---------------------------------------------------")
         print("tempString = ", tempString)
-        print("---------------------------------------------------\n")
+        print("---------------------------------------------------")
+        print("\n")
 
         #CSS can appear in one of three ways: filename in HTML, label tag in HTML, or <style> tag in HTML
 
@@ -394,8 +322,6 @@ class Parse():
 #                    print("You're in the for loop!")
                     file.write(d[j])
 #                    file.write(tempString[j])
-#                    results.append(d[j])#add the CSS to self.results
-                    results.append(tempString)
                     if d[j] == ";" or d[j + 1] == "{" or d[j + 1] == "}" or d[j] == "{" or d[j] == "}":
 #                    if tempString[j] == ";" or tempString[j + 1] == "{" or tempString[j + 1] == "}" or tempString[j] == "{" or tempString[j] == "}":
                         file.write("\n")
@@ -405,22 +331,22 @@ class Parse():
                 a = b
                 b += 1
                 if b <= len(d) - 1 and a <= len(d) - 1:# and a != -1 and b != -1:#Check if at end of HTML file
-                    self.getCSS(d, file, results, a, len(d) - 1)#Recursive call
+                    self.getCSS(d, file, a, len(d) - 1)#Recursive call
                 else:
-#                    return file
-                    return results
+                    return file
             else:
-                print("\n------------------------------")
+                print("\n")
+                print("------------------------------")
                 print("Tag not found.")
-                print("------------------------------\n")
+                print("------------------------------")
+                print("\n")
                 if x > len(d) - 1 or y > len(d) - 1:
-#                    return file
-                    return results
+                    return file
                 else:
                     x = y
                     x += 8
                     y = x + 1
-                    self.getCSS(d, file, results, x, len(d) - 1)
+                    self.getCSS(d, file, x, len(d) - 1)
         #For separate CSS files
         elif ".css" in tempString:#Search tempString for links to actual CSS files
             a = d.find("<link href=", x, endDotCSS + 1)#y)#len(d) - 1)
@@ -437,15 +363,22 @@ class Parse():
                     for j in range(a + 12, b + 4):
     #                    if self.d[j] != "/" and self.d[j + 1] != "/":#Don't have two slashes in a row
                         CSSFilename += d[j]
-                    print("\n--------------------------------")
+                    print("\n")
+                    print("--------------------------------")
                     print("CSSFilename: ", CSSFilename)
-                    print("\n--------------------------------\n")
+                    print("\n")
+                    print("--------------------------------")
+                    print("\n")
                     r = requests.get(CSSFilename, auth=requests.auth.HTTPBasicAuth("user", "pass"))
-                    file.write("\n\n---------------------------------\n")
+                    file.write("\n")
+                    file.write("\n")
+                    file.write("---------------------------------")
+                    file.write("\n")
                     file.write("CSS filename: " + CSSFilename)
-                    file.write("\n---------------------------------\n")
+                    file.write("\n")
+                    file.write("---------------------------------")
+                    file.write("\n")
                     file.write(r.text)
-                    results.append(r.text)#Add the CSS to self.results
                     #Go to the next tag in the file
                     for i in range(b, len(d)):
                         if i <= len(d) - 1 and d[i] == ">":#"\n":
@@ -454,10 +387,9 @@ class Parse():
                             b += 1
                             break
                     if b <= len(d) - 1 and a <= len(d) - 1 and b != -1 and a != -1:
-                        self.getCSS(d, file, results, a, len(d) - 1)#Recursive call
+                        self.getCSS(d, file, a, len(d) - 1)#Recursive call
                     else:
-#                        return file
-                        return results
+                        return file
                 else:
                     a = d.find("<link href=", x, y)#len(self.d) - 1)
                     b = d.find(".css", a, y)#len(self.d) - 1)
@@ -469,11 +401,15 @@ class Parse():
                         if d[j] != "\n":# and self.d[j] != "/":
                             CSSFilename += d[j]#from:  https://stackoverflow.com/questions/4435169/how-do-i-append-one-string-to-another-in-python
                     r = requests.get(CSSFilename, auth=requests.auth.HTTPBasicAuth("user", "pass"))
-                    file.write("\n\n-----------------------------------\n")
+                    file.write("\n")
+                    file.write("\n")
+                    file.write("-----------------------------------")
+                    file.write("\n")
                     file.write("CSS filename: " + CSSFilename)
-                    file.write("\n-----------------------------------\n")
+                    file.write("\n")
+                    file.write("-----------------------------------")
+                    file.write("\n")
                     file.write(r.text)
-#                    self.results.append(r.text)#Add the CSS to self.results
         #            for k in range(0, len(r.text)):
         #                file.write(CSSFile[k])
         #                if CSSFile[k] == ";" or CSSFile[k + 1] == "{" or CSSFile[k + 1] == "}" or CSSFile[k] == "{" or CSSFile[k] == "}":
@@ -489,140 +425,70 @@ class Parse():
                             b += 1
                             break
                     if b <= len(d) - 1 and a <= len(d) - 1 and b != -1 and a != -1:
-                        self.getCSS(d, file, results, a, len(d) - 1)#Recursive call
+                        self.getCSS(d, file, a, len(d) - 1)#Recursive call
                     else:
-#                        return file
-                        return results
+                        return file
             else:
-                print("\n------------------------------")
+                print("\n")
+                print("------------------------------")
                 print("Tag not found.")
-                print("------------------------------\n")
+                print("------------------------------")
+                print("\n")
                 if x > len(d) - 1 or y > len(d) - 1:
-#                    return file
-                    return results
+                    return file
                 else:
                     x = y
                     x += 5
                     y = x + 1
-                    self.getCSS(d, file, results, x, len(d) - 1)
+                    self.getCSS(d, file, x, len(d) - 1)
         #Move x and y to the next tag
         else:
             #If this is the last line in the HTML file
             if y >= len(d) - 1:# or y + 5 >= len(d) - 1:
-                print("\nI couldn't find any CSS on this pass-through.\n")
+                print("\n")
+                print("I couldn't find any CSS on this pass-through.")
+                print("\n")
                 print("y = ", y)
                 print("\n")
-#                return file
-                return results
+                return file
             else:
                 for i in range(y, len(d)):
                     #Move indices to next region to scan
                     if i + 1 <= len(d) - 1 and d[i] == ">":#"\n":
-                        print("You're in the last else statement!\n")
+                        print("You're in the last else statement!")
+                        print("\n")
                         print("i = ", i)
-                        print("\n\nx = ", x)
-                        print("\nlen(d) - 1 = ", len(d) - 1)
+                        print("\n")
+                        print("\n")
+                        print("x = ", x)
+                        print("\n")
+                        print("len(d) - 1 = ", len(d) - 1)
                         print("\n")
                         x = i + 1
                         break
-                self.getCSS(d, file, results, x, len(d) - 1)#y)#Recursive call
+                self.getCSS(d, file, x, len(d) - 1)#y)#Recursive call
 
-    def parseCSS(self, d, f, r, x, y):#, browsInst):
+    def parseCSS(self, f):
         s = f.read()
         #From:  https://stackoverflow.com/questions/6181935/how-do-you-create-different-variable-names-while-in-a-loop
-#        d = {}
-#        for i in range(0, len(s)):
-#            if s.find("CSSFilename: ", i) != -1:
-#                #Store the CSS text as a new string
-#                for j in range(i, len(s)):
-#                    d["CSS{0}".format(i)] += s[j]
-#                    if s.find("-------", i) != -1:
-#                        break
+        d = {}
+        for i in range(0, len(s)):
+            if s.find("CSSFilename: ", i) != -1:
+                #Store the CSS text as a new string
+                for j in range(i, len(s)):
+                    d["CSS{0}".format(i)] += s[j]
+                    if s.find("-------", i) != -1:
+                        break
         #For each CSS file stored as a string, parse the file
-#        for k in range(0, len(d)):
-#            if "," in d[k]:
-#                pass
+        for k in range(0, len(d)):
+            if "," in d[k]:
+                pass
 
             #for l in d[k]:
                 #if l == ",":
                     #pass
-        tempString = ""
-        w = 0
-        for i in range(x, s.find("--------------") + 1):#y + 1):
-            tempString += s[i]
-            #don't use elifs so that every if statement gets executed
-            if "width" in tempString:
-                #capture the property
-                index = tempString.find("width: ")
-                a = index + 7
-#                w = tempString[i + 7]
-                #From:  https://stackoverflow.com/questions/4289331/python-extract-numbers-from-a-string
-#                w = [int(tempString[index + 7]) for index + 7 in tempString.split() if tempString[index + 7].isdigit()]
-#                print("\n------------------------------------------\n", [int(tempString[index + 7]) for index + 7 in tempString.split() if tempString[index + 7].isdigit()])
-#                print("\n------------------------------------------\n")
-#                for a in tempString.split():
-#                for a in range(i + 7, len(tempString))
-#                    if tempString[a].isdigit():
-#                        w += int(tempString[a])
-#                w = int("".join(filter(tempString.isdigit(), tempString)))
-                print("\n---------------------------------------\n", w)
-                continue
-            if "height" in tempString:
-                #capture the property
-                index = tempString.find("height: ")
-                a = index + 8
-#                h = tempString[i + 8]
-#                [int(tempString[index + 8]) for (index + 8) in tempString.split() if tempString[index + 8].isdigit()]
-#                for a in tempString.split():
-#                for a in range(index + 8, len(tempString)):
-#                    if tempString[a].isdigit():
-#                        w += int(tempString[a])
-#                w = int("".join(filter(tempString.isdigit(), tempString)))
-                print("\n-----------------------------------------\n", w)
-                continue
-            if "display" in tempString:
-                #capture the property
-                index = tempString.find("display: ")
-                a = index + 9
-#                disp = tempString[i + 9]
-#                [str(tempString[index + 9]) for (index + 9) in tempString.split if re.search("AZ", tempString)]
-#                for a in tempString.split():
-#                    if tempString[a].isdigit():
-#                        w = int(tempString[a])
-#                w = int("".join(filter(tempString.isdigit(), tempString)))
-                print("\n-----------------------------------------\n", w)
-                continue
-            if "flex" in tempString:#need to find out what "flex" is
-                #capture the property
-                continue
-            if "solid" in tempString:#need to find out what "solid" is
-                #capture the property
-                continue
-            else:
-                if x == len(s) - 1 or y == len(s) - 1:
-                    print("\nNo more CSS to parse.\n")
-                    return
-                for j in range(0, y + 1):
-                    if s[j] == "---------------":
-                        x += j
-                self.parseCSS(d, f, r, x, y)
 
-            #Render the captured properties
-            #pass in values to web_gui.__init__()
-#            browsInst.init_ui(width, height, etc)
-
-
-        #Maybe do tag-by-tag regex instead?
-        #Regex sucks
-        #Do it anyway
-        dict = {}
-        n = 1
-        for i in range(0, len(d)):
-            if "link href=" in d:
-                dict["CSSFile_{}".format(n)] = d[i]
-                n += 1
-        print("\n\n\n\ndict = ", dict)
-
+        #Maybe do line-by-line regex instead?
 
     def give_original_url(self,url): #Need to retrieve the original url for hyperlink purposes.
         self.original_url = url

@@ -8,7 +8,7 @@ import socket
 
 # Manages high-level HTTP requests
 import requests
-
+import urllib3
 # Import method to parse html of a given url
 import web_parse
 
