@@ -1,6 +1,6 @@
 # Clarity
 An intuitive desktop Web browser for Macs.
-Cloned repository from classroom project.
+Cloned repository from class project (Computer Science 314 at the University of Portland, spring 2018 semester).
 Original collaborators:  hathaway19, thetanman1997, lucydavidson7, seydlitz19
 Dependencies:
 - Python 3.6
