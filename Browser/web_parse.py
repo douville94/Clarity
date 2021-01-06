@@ -12,6 +12,12 @@ import requests
 #import tinycss
 #import web_gui
 
+#Variable values:
+#text = a particular portion of HTML code with whitespace excised
+#rawText = all HTML code with whitespace excised
+#partialLink = match object returned after searching all html code for href (an HTML attribute specifying a Webpage's URL), whitespace, any chars, ', "
+#path: a particular URL parsed from HTML href attribute
+
 class Parse():
     def __init__(self):
         super().__init__()
@@ -96,6 +102,21 @@ class Parse():
 
                 # determine what the title should be.
                 titleMatch = re.search(r'(\stitle=\s?[\'\"])(.+?)([\'\"])', rawText) #title in group(2)
+                #REGEX SYNTAX BREAKDOWN:
+                #re: Python regex package
+                #re.search(): search function that returns a boolean match object
+                #r: placed before a string literal to allow backslashes to be read as chars i.e. prevent special handling of backslashes IN PYTHON
+                #\: escapes a special char
+                #\s: whitespace
+                #?: quantifier indicating the previous char literal occurs once or none in the searched text
+                #+: quantifier indicating the previous char literal occurs once or more in the searched text
+                #.: any char except line break
+                #\': '
+                #\": "
+                #(: specifies capturing group
+                #): close specification of capture group
+                #[: chars in the brackets specified are subject to operation(s) specified before the brackets
+                #]: close specified chars to be operated on
                 title = None
                 if titleMatch:
                     title = titleMatch.group(2)
@@ -187,10 +208,10 @@ class Parse():
 #                    newLink = "http://"
 #                    newLink += link
                 #get file from path
-#                text = requests.get(path, auth=requests.auth.HTTPBasicAuth("user", "pass")).text
+                text = requests.get(path, auth=requests.auth.HTTPBasicAuth("user", "pass"))#.text
 #                text = requests.get(newLink, auth = requests.auth.HTTPBasicAuth("user", "pass")).text
-#                textStr = str(text)
-#                textStr = textStr.strip("<>")
+                textStr = str(text)
+                textStr = textStr.strip("<>")
                 print("\n----------------------------------\n", textStr)
                 self.results.append(('css', textStr))
             elif self.data.startswith('style', self.open_tags[num] + 1, self.close_tags[num]):
@@ -250,9 +271,18 @@ class Parse():
 #            path_e = len(text)
 #        else:
 #            path_e = text.rfind(" ", path_s, path_e) # this will be the space at the end of block we want.
+
+        f = open("path.txt", "w")
+        if path is not None:
+            f.write(path)
+            f.close()
         # if no match is found
         if path == None:
             print("MATCH: match not found from", text, "\n")
+            f.write("MATCH: match not found from")
+            f.write(text)
+            f.write("\n")
+            f.close()
             return None
 
         # return what is the path without quotes around it and without whitespace.

@@ -1,0 +1,1 @@
+MATCH: match not found from<img align=top src=example/prettypicture.jpg alt="Pretty Picture"

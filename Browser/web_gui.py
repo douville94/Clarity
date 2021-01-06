@@ -12,8 +12,7 @@ import re
 from get_url import parse_site
 #from PyQt5.QtWebChannel import QWebChannel
 #from PyQt4.QtWebKit import QWebView#need to install PyQt4 which has to be built from source (yuck)
-#Next line taken from:  https://stackoverflow.com/questions/2805231/how-can-i-do-dns-lookups-in-python-including-referring-to-etc-hosts
-import socket
+import socket#Taken from:  https://stackoverflow.com/questions/2805231/how-can-i-do-dns-lookups-in-python-including-referring-to-etc-hosts
 import pyperclip #install from https://pypi.python.org/pypi/pyperclip
 
 # Our web browser class
@@ -150,7 +149,7 @@ class BrowserWindow(QWidget):
         self.overall_layout.insertSpacing(0, 30)
 
         # Creates the first tab instance on startup
-        tab_1 = TabWindow(None, self)
+        tab_1 = TabWindow(self)
         # Adds the tab to the Browser window
         self.tabs.addTab(tab_1, "New Tab")
 
@@ -177,7 +176,7 @@ class BrowserWindow(QWidget):
     # Helper Method to create a new tab
     def add_tab(self):
         # Creates a tab instance
-        tab = TabWindow(None, self)
+        tab = TabWindow(self)
         # Adds the tab
         self.tabs.addTab(tab, "New Tab")
         # Changes the current tab to be the new tab
@@ -207,7 +206,7 @@ class BrowserWindow(QWidget):
 
     def refresh_page(self):
         try:
-            #            file_to_open = open("websiteOutput.txt", "r")
+#            file_to_open = open("websiteOutput.txt", "r")
 #            print(file_to_open.read())
 #            if website_elements_refresh:
 #                for (htmlType, web_element) in website_elements_refresh:
@@ -250,6 +249,7 @@ class BrowserWindow(QWidget):
 #                    self.scroll_layout.addWidget(new_label)
 #
 #            file_to_open.close()
+
             self.register_address(self.current_url)
         except:
             self.display_error("Unable to refresh the page...")
@@ -311,15 +311,16 @@ class BrowserWindow(QWidget):
             pyperclip.paste()
 
 # A class to represent an instance of a Tab
-class TabWindow(QWidget):
-    def __init__(self, parent, Browser):
-        super(TabWindow, self).__init__(parent)
+class TabWindow(BrowserWindow):
+    def __init__(self, parent):
+#        super(TabWindow, self).__init__(parent)
+        super().__init__(parent)
         # Call the method to initialize the tab specific GUI elements
         self.init_tab_GUI()
         # Call the method to initialize the images in the GUI
         self.init_GUI_images()
         # Variable to hold the parent Browser GUI for the tab
-        self.parent = Browser
+#        self.parent = BrowserGUI
 
     # Helper method to initialize elements of the tab specific GUI
     def init_tab_GUI(self):
